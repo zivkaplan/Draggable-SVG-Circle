@@ -1,90 +1,19 @@
-// const dragItem = document.querySelector("#item");
-// const container = document.querySelector("#container");
-
-
-// let active = false;
-// let currentX;
-// let currentY;
-// let initialX;
-// let initialY;
-// let xOffset = 0;
-// let yOffset = 0;
-
-// container.addEventListener("touchstart", dragStart, false);
-// container.addEventListener("touchend", dragEnd, false);
-// container.addEventListener("touchmove", drag, false);
-
-// container.addEventListener("mousedown", dragStart, false);
-// container.addEventListener("mouseup", dragEnd, false);
-// container.addEventListener("mousemove", drag, false);
-
-// function dragStart(e) {
-//     console.log(`mouseup on X: ${e.x}, Y: ${e.y}`)
-//     if (e.type === "touchstart") {
-//         initialX = e.touches[0].clientX - xOffset;
-//         initialY = e.touches[0].clientY - yOffset;
-//     } else {
-//         initialX = e.clientX - xOffset;
-//         initialY = e.clientY - yOffset;
-//     }
-
-//     if (e.target === dragItem) {
-//         active = true;
-//     }
-// }
-
-// function dragEnd(e) {
-
-//     if (currentX % 50 !== 0) {
-//         roundedX = roundTo(currentX)
-//     }
-//     if (currentY % 50 !== 0) {
-//         roundedY = roundTo(currentY)
-//     }
-//     setTranslate(roundedX, roundedY, dragItem);
-
-//     console.log(`mouseup on X: ${currentX}, Y: ${currentY}.\nsnapped to X: ${roundedX}, Y: ${roundedY}.`)
-//     // from original code:
-//     // initialX = currentX;
-//     // initialY = currentY;
-
-//     initialX = roundedX;
-//     initialY = roundedY;
-//     active = false;
-// }
-
-// function drag(e) {
-//     if (active) {
-
-//         e.preventDefault();
-
-//         if (e.type === "touchmove") {
-//             currentX = e.touches[0].clientX - initialX;
-//             currentY = e.touches[0].clientY - initialY;
-//         } else {
-//             currentX = e.clientX - initialX;
-//             currentY = e.clientY - initialY;
-//         }
-
-//         xOffset = currentX;
-//         yOffset = currentY;
-
-//         setTranslate(currentX, currentY, dragItem);
-//     }
-// }
-
-// function setTranslate(xPos, yPos, el) {
-
-//     el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
-// }
-
-// function roundTo(x) {
-//     return Math.round(x / 50) * 50;
-// }
-
 var dragItem = document.querySelector("#item");
 var container = document.querySelector("#container");
 
+// getting the windiw dimensions  
+const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+
+// rounding the dimensions
+const vwRounded = roundNum(vw)
+const vhRounded = roundNum(vh)
+
+//settinf the draggable item at the center algined to the 50's multp.
+dragItem.setAttribute('cx', vwRounded / 2)
+dragItem.setAttribute('cy', vhRounded / 2)
+
+//global variables
 var active = false;
 var currentX;
 var currentY;
@@ -93,14 +22,41 @@ var initialY;
 var xOffset = 0;
 var yOffset = 0;
 
-container.addEventListener("touchstart", dragStart, false);
-container.addEventListener("touchend", dragEnd, false);
-container.addEventListener("touchmove", drag, false);
+// func that "moves" the draggabe element
+function setTranslate(xPos, yPos, el) {
+    el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+}
+// function to round number. default is 50.
+function roundNum(x) {
+    const roundTo = 50
+    return Math.round(x / roundTo) * roundTo;
+}
+function gridMaker() {
+    // vertical lines
+    for (let i = vwRounded; i >= 0; i = i - 50) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.classList.add('gridLines')
+        line.setAttribute('x1', i)
+        line.setAttribute('x2', i)
+        line.setAttribute('y1', "0")
+        line.setAttribute('y2', vh)
+        container.insertBefore(line, dragItem);
+        // console.log(`vertical at ${i} `)
+    }
+    // horizontal lines
+    for (let i = vhRounded; i >= 0; i -= 50) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.classList.add('gridLines')
+        line.setAttribute('x1', "0")
+        line.setAttribute('x2', vw)
+        line.setAttribute('y1', i)
+        line.setAttribute('y2', i)
+        container.insertBefore(line, dragItem);
+        // console.log(`horizontal at ${i} `)
+    }
 
-container.addEventListener("mousedown", dragStart, false);
-container.addEventListener("mouseup", dragEnd, false);
-container.addEventListener("mousemove", drag, false);
-
+}
+//func for mousedown
 function dragStart(e) {
     if (e.type === "touchstart") {
         initialX = e.touches[0].clientX - xOffset;
@@ -114,13 +70,13 @@ function dragStart(e) {
         active = true;
     }
 }
-
+// func for mouseup
 function dragEnd(e) {
     if (currentX % 50 !== 0) {
-        currentX = roundTo(currentX)
+        currentX = roundNum(currentX)
     }
     if (currentY % 50 !== 0) {
-        currentY = roundTo(currentY)
+        currentY = roundNum(currentY)
     }
     setTranslate(currentX, currentY, dragItem);
 
@@ -132,6 +88,7 @@ function dragEnd(e) {
     active = false;
 }
 
+// func for mousemove
 function drag(e) {
     if (active) {
         e.preventDefault();
@@ -151,10 +108,14 @@ function drag(e) {
     }
 }
 
-function setTranslate(xPos, yPos, el) {
-    el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
-}
 
-function roundTo(x) {
-    return Math.round(x / 50) * 50;
-}
+
+// main
+gridMaker();
+container.addEventListener("touchstart", dragStart, false);
+container.addEventListener("touchend", dragEnd, false);
+container.addEventListener("touchmove", drag, false);
+
+container.addEventListener("mousedown", dragStart, false);
+container.addEventListener("mouseup", dragEnd, false);
+container.addEventListener("mousemove", drag, false);
