@@ -7,8 +7,8 @@ const vw = Math.max(document.documentElement.clientWidth)
 const vh = Math.max(document.documentElement.clientHeight)
 
 // rounding the dimensions
-const vwRounded = roundNum(vw)
-const vhRounded = roundNum(vh)
+const vwRounded = roundNum(vw, 100)
+const vhRounded = roundNum(vh, 100)
 
 //setting the grid port to the rounded dimensions
 container.setAttribute("width", vwRounded)
@@ -32,11 +32,13 @@ function setTranslate(xPos, yPos, el) {
     el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
 }
 // function to round number. default is 50.
-function roundNum(x) {
-    const roundTo = 50
+function roundNum(x, roundTo = 50) {
     return Math.round(x / roundTo) * roundTo;
 }
 function gridMaker() {
+    console.log(vwRounded)
+    let YlineCount = 0
+    let XlineCount = 0;
     // vertical lines
     for (let i = vwRounded; i >= 0; i = i - 50) {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -46,8 +48,10 @@ function gridMaker() {
         line.setAttribute('y1', "0")
         line.setAttribute('y2', vh)
         container.insertBefore(line, dragItem);
+        YlineCount++
         // console.log(`vertical at ${i} `)
     }
+    console.log(YlineCount)
     // horizontal lines
     for (let i = vhRounded; i >= 0; i -= 50) {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -57,9 +61,10 @@ function gridMaker() {
         line.setAttribute('y1', i)
         line.setAttribute('y2', i)
         container.insertBefore(line, dragItem);
+        XlineCount++
         // console.log(`horizontal at ${i} `)
     }
-
+    console.log(XlineCount)
 }
 //func for mousedown
 function dragStart(e) {
