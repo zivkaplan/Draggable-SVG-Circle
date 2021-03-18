@@ -1,6 +1,5 @@
 var dragItem = document.querySelector("#item");
 var container = document.querySelector("#container");
-var outerContainer = document.querySelector("#outerContainer");
 
 // getting the window dimensions  
 const vw = Math.max(document.documentElement.clientWidth)
