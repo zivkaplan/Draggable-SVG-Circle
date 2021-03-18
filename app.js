@@ -36,11 +36,8 @@ function roundNum(x, roundTo = 50) {
     return Math.round(x / roundTo) * roundTo;
 }
 function gridMaker() {
-    console.log(vwRounded)
-    let YlineCount = 0
-    let XlineCount = 0;
     // vertical lines
-    for (let i = vwRounded; i >= 0; i = i - 50) {
+    for (let i = vwRounded; i >= 0; i -= 50) {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         line.classList.add('gridLines')
         line.setAttribute('x1', i)
@@ -48,10 +45,7 @@ function gridMaker() {
         line.setAttribute('y1', "0")
         line.setAttribute('y2', vh)
         container.insertBefore(line, dragItem);
-        YlineCount++
-        // console.log(`vertical at ${i} `)
     }
-    console.log(YlineCount)
     // horizontal lines
     for (let i = vhRounded; i >= 0; i -= 50) {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -61,10 +55,7 @@ function gridMaker() {
         line.setAttribute('y1', i)
         line.setAttribute('y2', i)
         container.insertBefore(line, dragItem);
-        XlineCount++
-        // console.log(`horizontal at ${i} `)
     }
-    console.log(XlineCount)
 }
 //func for mousedown
 function dragStart(e) {
