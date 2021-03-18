@@ -1,15 +1,20 @@
 var dragItem = document.querySelector("#item");
 var container = document.querySelector("#container");
+var outerContainer = document.querySelector("#outerContainer");
 
-// getting the windiw dimensions  
-const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+// getting the window dimensions  
+const vw = Math.max(document.documentElement.clientWidth)
+const vh = Math.max(document.documentElement.clientHeight)
 
 // rounding the dimensions
 const vwRounded = roundNum(vw)
 const vhRounded = roundNum(vh)
 
-//settinf the draggable item at the center algined to the 50's multp.
+//setting the grid port to the rounded dimensions
+container.setAttribute("width", vwRounded)
+container.setAttribute("height", vhRounded)
+
+//setting the draggable item at the center algined to the 50's multp.
 dragItem.setAttribute('cx', vwRounded / 2)
 dragItem.setAttribute('cy', vhRounded / 2)
 
@@ -119,3 +124,11 @@ container.addEventListener("touchmove", drag, false);
 container.addEventListener("mousedown", dragStart, false);
 container.addEventListener("mouseup", dragEnd, false);
 container.addEventListener("mousemove", drag, false);
+
+window.addEventListener('resize', () => {
+    newWindowX = Math.max(document.documentElement.clientWidth || 0, window.innerWidth)
+    newWindowY = Math.max(document.documentElement.clientHeight || 0, window.innerHeight)
+    if (newWindowX !== vw || newWindowY !== vh) {
+        location.reload()
+    }
+});
