@@ -31,8 +31,8 @@ function setTranslate(xPos, yPos, el) {
     el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
 }
 // function to round number. default is 50.
-function roundNum(x, roundTo = 50) {
-    return Math.round(x / roundTo) * roundTo;
+function roundNum(num, roundTo = 50) {
+    return Math.round(num / roundTo) * roundTo;
 }
 function gridMaker() {
     // vertical lines
