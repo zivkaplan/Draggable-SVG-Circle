@@ -1,6 +1,7 @@
 const dragItem = document.querySelector("#draggable");
 const container = document.querySelector("#container");
 
+// vhange the value to define the grid lines gap size. this effect the snapping effect accordingly;
 const gridCubeSize =100;
 
 // getting the screen dimensions and drawing a full screen grid
