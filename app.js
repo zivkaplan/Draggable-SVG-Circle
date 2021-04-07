@@ -1,51 +1,18 @@
-const dragItem = document.querySelector("#draggable");
 const container = document.querySelector("#container");
 
-// change the value to define the grid lines gap size. this affects the snapping effect accordingly;
-const gridCubeSize = 100;
-
-// getting the screen dimensions and drawing a full screen grid
-const screenVw = window.screen.width;
-const screenVh = window.screen.height;
-
-// rounding the dimensions to make sure it produces an aligning grid
-const screenVwRounded = roundNum(screenVw, gridCubeSize)
-const screenVhRounded = roundNum(screenVh, gridCubeSize)
-
-function gridMaker() {
-    // vertical lines
-    for (let i = screenVwRounded; i >= 0; i -= (gridCubeSize / 2)) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.classList.add('gridLines')
-        line.setAttribute('x1', i)
-        line.setAttribute('x2', i)
-        line.setAttribute('y1', "0")
-        line.setAttribute('y2', screenVh)
-        container.insertBefore(line, dragItem);
-    }
-    // horizontal lines
-    for (let i = screenVhRounded; i >= 0; i -= (gridCubeSize / 2)) {
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.classList.add('gridLines')
-        line.setAttribute('x1', "0")
-        line.setAttribute('x2', screenVw)
-        line.setAttribute('y1', i)
-        line.setAttribute('y2', i)
-        container.insertBefore(line, dragItem);
-    }
+// getting the screen and window dimensions
+const screenSize = {
+    height: window.screen.height,
+    width: window.screen.width
+}
+const windowSize = {
+    height: document.documentElement.clientHeight,
+    width: document.documentElement.clientWidth
 }
 
-
-// getting the window dimenensions in order to position the draggable item in the middle
-const windowVw = Math.max(document.documentElement.clientWidth)
-const windowVh = Math.max(document.documentElement.clientHeight)
-
-// setting the draggable item at the center of the dimensions that had been rounded to make sure they fit the grid.
-dragItem.setAttribute('cx', roundNum(windowVw, gridCubeSize) / 2)
-dragItem.setAttribute('cy', roundNum(windowVh, gridCubeSize) / 2)
-
 //global variables
-let active = false;
+const gridSize = 100; // change to control the grid squres size
+let isDragItemClicked = false;
 let currentX;
 let currentY;
 let initialX;
@@ -53,51 +20,69 @@ let initialY;
 let xOffset = 0;
 let yOffset = 0;
 
-// func that "moves" the draggabe element
+
+function gridMaker() {
+    // The lines are calculate from the remainder of half of the window divided by the grid size.
+    // that ensures a grid will pass exactly in the center of the window.
+
+    // vertical lines loop.
+    for (let i = (windowSize.width / 2) % gridSize; i < screenSize.width; i += gridSize) {
+        addGridLine(i, i, 0, screenSize.height);
+    }
+    // horizontal lines loop
+    for (let i = (windowSize.height / 2) % gridSize; i < screenSize.height; i += gridSize) {
+        addGridLine(0, screenSize.width, i, i);
+    }
+}
+
+function addGridLine(xStart, xEnd, yStart, yEnd) {
+    //function that generate SVG line and append it to the #container element;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.classList.add('gridLines');
+    line.setAttribute('x1', xStart);
+    line.setAttribute('x2', xEnd);
+    line.setAttribute('y1', yStart);
+    line.setAttribute('y2', yEnd);
+    container.append(line);
+}
+
+function createDraggableCircle(circleSize = 25) {
+    //function that generate SVG circle and position it in the center of the window.
+    //the function takes one parameter (number) that defines the circle's radius size. default is 25.
+    const dragItem = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dragItem.id = 'draggable';
+    dragItem.setAttribute('r', circleSize);
+    dragItem.setAttribute('cx', (windowSize.width / 2));
+    dragItem.setAttribute('cy', (windowSize.height / 2));
+    container.append(dragItem);
+    return dragItem;
+}
+
 function setTranslate(xPos, yPos, el) {
+    // function that "moves" the draggabe element
     el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
 }
-// function to round number. default is 50.
 function roundNum(num, roundTo) {
+    // function to round number. used for the snapping effect to the grid.
     return Math.round(num / roundTo) * roundTo;
 }
 
-//func for mousedown
 function dragStart(e) {
-    if (e.type === "touchstart") {
-        initialX = e.touches[0].clientX - xOffset;
-        initialY = e.touches[0].clientY - yOffset;
-    } else {
-        initialX = e.clientX - xOffset;
-        initialY = e.clientY - yOffset;
-    }
     if (e.target === dragItem) {
-        active = true;
+        isDragItemClicked = true;
+        if (e.type === "touchstart") {
+            initialX = e.touches[0].clientX - xOffset;
+            initialY = e.touches[0].clientY - yOffset;
+        } else {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+        }
     }
 }
-// func for mouseup
-function dragEnd(e) {
-    if (currentX % (gridCubeSize / 2) !== 0) {
-        currentX = roundNum(currentX, gridCubeSize / 2)
-    }
-    if (currentY % (gridCubeSize / 2) !== 0) {
-        currentY = roundNum(currentY, gridCubeSize / 2)
-    }
-    setTranslate(currentX, currentY, dragItem);
 
-    initialX = currentX;
-    initialY = currentY;
-    xOffset = currentX;
-    yOffset = currentY;
-
-    active = false;
-}
-
-// func for mousemove
 function drag(e) {
+    if (isDragItemClicked) {
 
-    if (active){
-    
         e.preventDefault();
 
         if (e.type === "touchmove") {
@@ -108,16 +93,27 @@ function drag(e) {
             currentY = e.clientY - initialY;
         }
 
-        xOffset = currentX;
-        yOffset = currentY;
-
         setTranslate(currentX, currentY, dragItem);
     }
 }
 
+function dragEnd(e) {
+    currentX = roundNum(currentX, gridSize)
+    currentY = roundNum(currentY, gridSize)
+    setTranslate(currentX, currentY, dragItem);
 
-// main
+    initialX = currentX;
+    initialY = currentY;
+    xOffset = currentX;
+    yOffset = currentY;
+
+    isDragItemClicked = false;
+}
+
+// Main
 gridMaker();
+const dragItem = createDraggableCircle();
+
 container.addEventListener("touchstart", dragStart, false);
 container.addEventListener("touchend", dragEnd, false);
 container.addEventListener("touchmove", drag, false);
