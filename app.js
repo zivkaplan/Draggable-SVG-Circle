@@ -11,7 +11,7 @@ const windowSize = {
 }
 
 //global variables
-const gridSize = 100; // change to control the grid squres size
+const gridSize = 100; // change to control the gap between the grid's lines.
 let isDragItemClicked = false;
 let currentX;
 let currentY;
