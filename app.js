@@ -1,10 +1,6 @@
 const container = document.querySelector("#container");
 
-// getting the screen and window dimensions
-const screenSize = {
-    height: window.screen.height,
-    width: window.screen.width
-}
+// getting the window dimensions
 const windowSize = {
     height: document.documentElement.clientHeight,
     width: document.documentElement.clientWidth
@@ -26,12 +22,12 @@ function gridMaker() {
     // that ensures a grid will pass exactly in the center of the window.
 
     // vertical lines loop.
-    for (let i = (windowSize.width / 2) % gridSize; i < screenSize.width; i += gridSize) {
-        addGridLine(i, i, 0, screenSize.height);
+    for (let i = (windowSize.width / 2) % gridSize; i < window.screen.width; i += gridSize) {
+        addGridLine(i, i, 0, window.screen.height);
     }
     // horizontal lines loop
-    for (let i = (windowSize.height / 2) % gridSize; i < screenSize.height; i += gridSize) {
-        addGridLine(0, screenSize.width, i, i);
+    for (let i = (windowSize.height / 2) % gridSize; i < window.screen.height; i += gridSize) {
+        addGridLine(0, window.screen.width, i, i);
     }
 }
 
