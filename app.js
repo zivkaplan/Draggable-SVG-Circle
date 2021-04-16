@@ -9,13 +9,10 @@ const windowSize = {
 //global variables
 const gridSize = 100; // change to control the gap between the grid's lines.
 let isDragItemClicked = false;
-let currentX;
-let currentY;
+let currentX = 0;
+let currentY = 0;
 let initialX;
 let initialY;
-let xOffset = 0;
-let yOffset = 0;
-
 
 function gridMaker() {
     // The lines are calculate from the remainder of half of the window divided by the grid size.
@@ -67,11 +64,11 @@ function dragStart(e) {
     if (e.target === dragItem) {
         isDragItemClicked = true;
         if (e.type === "touchstart") {
-            initialX = e.touches[0].clientX - xOffset;
-            initialY = e.touches[0].clientY - yOffset;
+            initialX = e.touches[0].clientX - currentX;
+            initialY = e.touches[0].clientY - currentY;
         } else {
-            initialX = e.clientX - xOffset;
-            initialY = e.clientY - yOffset;
+            initialX = e.clientX - currentX;
+            initialY = e.clientY - currentY;
         }
     }
 }
@@ -100,8 +97,6 @@ function dragEnd(e) {
 
     initialX = currentX;
     initialY = currentY;
-    xOffset = currentX;
-    yOffset = currentY;
 
     isDragItemClicked = false;
 }
