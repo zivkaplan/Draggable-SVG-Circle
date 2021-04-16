@@ -11,8 +11,8 @@ const gridSize = 100; // change to control the gap between the grid's lines.
 let isDragItemClicked = false;
 let currentX = 0;
 let currentY = 0;
-let initialX;
-let initialY;
+let offsetX;
+let offsetY;
 
 function gridMaker() {
     // The lines are calculate from the remainder of half of the window divided by the grid size.
@@ -55,6 +55,7 @@ function setTranslate(xPos, yPos, el) {
     // function that "moves" the draggabe element
     el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
 }
+
 function roundNum(num, roundTo) {
     // function to round number. used for the snapping effect to the grid.
     return Math.round(num / roundTo) * roundTo;
@@ -63,31 +64,19 @@ function roundNum(num, roundTo) {
 function dragStart(e) {
     if (e.target === dragItem) {
         isDragItemClicked = true;
-        if (e.type === "touchstart") {
-            initialX = e.touches[0].clientX - currentX;
-            initialY = e.touches[0].clientY - currentY;
-        } else {
-            initialX = e.clientX - currentX;
-            initialY = e.clientY - currentY;
-        }
+        offsetX = e.clientX - currentX;
+        offsetY = e.clientY - currentY;
     }
 }
 
 function drag(e) {
     if (isDragItemClicked) {
-
         e.preventDefault();
-
-        if (e.type === "touchmove") {
-            currentX = e.touches[0].clientX - initialX;
-            currentY = e.touches[0].clientY - initialY;
-        } else {
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
-        }
-
-        setTranslate(currentX, currentY, dragItem);
+        currentX = e.clientX - offsetX;
+        currentY = e.clientY - offsetY;
     }
+
+    setTranslate(currentX, currentY, dragItem);
 }
 
 function dragEnd(e) {
@@ -95,19 +84,12 @@ function dragEnd(e) {
     currentY = roundNum(currentY, gridSize)
     setTranslate(currentX, currentY, dragItem);
 
-    initialX = currentX;
-    initialY = currentY;
-
     isDragItemClicked = false;
 }
 
 // Main
 gridMaker();
 const dragItem = createDraggableCircle();
-
-container.addEventListener("touchstart", dragStart, false);
-container.addEventListener("touchend", dragEnd, false);
-container.addEventListener("touchmove", drag, false);
 
 container.addEventListener("mousedown", dragStart, false);
 container.addEventListener("mouseup", dragEnd, false);
