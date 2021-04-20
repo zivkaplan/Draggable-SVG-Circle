@@ -8,11 +8,8 @@ const windowSize = {
 
 //global variables
 const gridSize = 100; // change to control the gap between the grid's lines.
-let isDragItemClicked = false;
-let currentX = 0;
-let currentY = 0;
-let offsetX;
-let offsetY;
+// let isDragItemClicked = false;
+
 
 function gridMaker() {
     // The lines are calculate from the remainder of half of the window divided by the grid size.
@@ -43,7 +40,12 @@ function createDraggableCircle(circleSize = 25) {
     //function that generate SVG circle and position it in the center of the window.
     //the function takes one parameter (number) that defines the circle's radius size. default is 25.
     const dragItem = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    dragItem.id = 'draggable';
+    dragItem.classList.add('draggable');
+    dragItem.dataset.active = false;
+    dragItem.dataset.currentX = 0;
+    dragItem.dataset.currentY = 0;
+    dragItem.dataset.offsetX = 0;
+    dragItem.dataset.offsetY = 0;
     dragItem.setAttribute('r', circleSize);
     dragItem.setAttribute('cx', (windowSize.width / 2));
     dragItem.setAttribute('cy', (windowSize.height / 2));
@@ -53,7 +55,7 @@ function createDraggableCircle(circleSize = 25) {
 
 function setTranslate(xPos, yPos, el) {
     // function that "moves" the draggabe element
-    el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
 }
 
 function roundNum(num, roundTo) {
@@ -61,35 +63,78 @@ function roundNum(num, roundTo) {
     return Math.round(num / roundTo) * roundTo;
 }
 
+function getPositions(item) {
+    currentX = parseInt(item.dataset.currentX);
+    currentY = parseInt(item.dataset.currentY);
+
+    offsetX = parseInt(item.dataset.offsetX);
+    offsetY = parseInt(item.dataset.offsetY);
+
+    return { currentX, currentY, offsetX, offsetY }
+}
+
 function dragStart(e) {
-    if (e.target === dragItem) {
-        isDragItemClicked = true;
-        offsetX = e.clientX - currentX;
-        offsetY = e.clientY - currentY;
-    }
+    if (!e.target.closest('.draggable')) return;
+    e.target.dataset.active = true;
+
+    // get item's ID and positions
+    const item = document.querySelector("[data-active='true']")
+
+    currentX = parseInt(item.dataset.currentX);
+    currentY = parseInt(item.dataset.currentY);
+
+    //saving the offset data on itself
+    item.dataset.offsetX = e.clientX - currentX;
+    item.dataset.offsetY = e.clientY - currentY;
+
+    // isDragItemClicked = true;
 }
 
 function drag(e) {
-    if (isDragItemClicked) {
-        e.preventDefault();
-        currentX = e.clientX - offsetX;
-        currentY = e.clientY - offsetY;
-    }
 
-    setTranslate(currentX, currentY, dragItem);
+    if (!e.target.closest("[data-active='true']")) return;
+    e.preventDefault();
+
+    // get item's ID and positions
+    const item = document.querySelector("[data-active='true']")
+    let { currentX, currentY, offsetX, offsetY } = getPositions(item);
+
+    //
+    currentX = e.clientX - offsetX;
+    currentY = e.clientY - offsetY;
+
+    setTranslate(currentX, currentY, item);
+
+    //saving the offset data on itself
+    item.dataset.currentX = currentX;
+    item.dataset.currentY = currentY;
 }
 
+
 function dragEnd(e) {
+
+    if (!e.target.closest("[data-active='true']")) return;
+
+    // get item's ID and positions
+    const item = document.querySelector("[data-active='true']")
+    let { currentX, currentY } = getPositions(item);
+
     currentX = roundNum(currentX, gridSize)
     currentY = roundNum(currentY, gridSize)
-    setTranslate(currentX, currentY, dragItem);
 
-    isDragItemClicked = false;
+    setTranslate(currentX, currentY, item);
+
+    item.dataset.active = false;
+
+    //saving the offset data on itself
+    item.dataset.currentX = currentX;
+    item.dataset.currentY = currentY;
 }
 
 // Main
 gridMaker();
-const dragItem = createDraggableCircle();
+createDraggableCircle();
+createDraggableCircle();
 
 container.addEventListener("mousedown", dragStart, false);
 container.addEventListener("mouseup", dragEnd, false);
