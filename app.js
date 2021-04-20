@@ -36,26 +36,27 @@ function addGridLine(xStart, xEnd, yStart, yEnd) {
     container.append(line);
 }
 
-function createDraggableCircle(circleSize = 25) {
+function createDraggableCircle(quantity = 1, circleSize = 25) {
     //function that generate SVG circle and position it in the center of the window.
     //the function takes one parameter (number) that defines the circle's radius size. default is 25.
-    const dragItem = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    dragItem.classList.add('draggable');
-    dragItem.dataset.active = false;
-    dragItem.dataset.currentX = 0;
-    dragItem.dataset.currentY = 0;
-    dragItem.dataset.offsetX = 0;
-    dragItem.dataset.offsetY = 0;
-    dragItem.setAttribute('r', circleSize);
-    dragItem.setAttribute('cx', (windowSize.width / 2));
-    dragItem.setAttribute('cy', (windowSize.height / 2));
-    container.append(dragItem);
-    return dragItem;
+    for (let i = 0; i < quantity; i++) {
+        const dragItem = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        dragItem.classList.add('draggable');
+        dragItem.dataset.active = false;
+        dragItem.dataset.currentX = 0;
+        dragItem.dataset.currentY = 0;
+        dragItem.dataset.offsetX = 0;
+        dragItem.dataset.offsetY = 0;
+        dragItem.setAttribute('r', circleSize);
+        dragItem.setAttribute('cx', (windowSize.width / 2));
+        dragItem.setAttribute('cy', (windowSize.height / 2));
+        container.append(dragItem);
+    }
 }
 
 function setTranslate(xPos, yPos, el) {
     // function that "moves" the draggabe element
-    el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+    el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
 }
 
 function roundNum(num, roundTo) {
@@ -75,6 +76,8 @@ function getPositions(item) {
 
 function dragStart(e) {
     if (!e.target.closest('.draggable')) return;
+
+    //marking the active circle
     e.target.dataset.active = true;
 
     // get item's ID and positions
@@ -86,23 +89,19 @@ function dragStart(e) {
     //saving the offset data on itself
     item.dataset.offsetX = e.clientX - currentX;
     item.dataset.offsetY = e.clientY - currentY;
-
-    // isDragItemClicked = true;
 }
 
 function drag(e) {
-
-    if (!e.target.closest("[data-active='true']")) return;
-    e.preventDefault();
+    if (document.querySelectorAll("[data-active='true']").length === 0) return;
 
     // get item's ID and positions
     const item = document.querySelector("[data-active='true']")
     let { currentX, currentY, offsetX, offsetY } = getPositions(item);
 
-    //
     currentX = e.clientX - offsetX;
     currentY = e.clientY - offsetY;
 
+    // setTranslate(currentX, currentY, item);
     setTranslate(currentX, currentY, item);
 
     //saving the offset data on itself
@@ -112,7 +111,6 @@ function drag(e) {
 
 
 function dragEnd(e) {
-
     if (!e.target.closest("[data-active='true']")) return;
 
     // get item's ID and positions
@@ -121,9 +119,9 @@ function dragEnd(e) {
 
     currentX = roundNum(currentX, gridSize)
     currentY = roundNum(currentY, gridSize)
-
     setTranslate(currentX, currentY, item);
 
+    //unmarking the dragged circle
     item.dataset.active = false;
 
     //saving the offset data on itself
@@ -133,8 +131,7 @@ function dragEnd(e) {
 
 // Main
 gridMaker();
-createDraggableCircle();
-createDraggableCircle();
+createDraggableCircle(10);
 
 container.addEventListener("mousedown", dragStart, false);
 container.addEventListener("mouseup", dragEnd, false);
