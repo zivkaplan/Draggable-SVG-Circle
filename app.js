@@ -92,7 +92,7 @@ function dragStart(e) {
 }
 
 function drag(e) {
-    if (document.querySelectorAll("[data-active='true']").length === 0) return;
+    if (!document.querySelector("[data-active='true']")) return;
 
     // get item's ID and positions
     const item = document.querySelector("[data-active='true']")
