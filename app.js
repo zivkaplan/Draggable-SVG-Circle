@@ -9,17 +9,28 @@ const windowSize = {
 //global variables
 
 //vriable to save the current dragged item properties
-const draggedItem = {
+const currentDragItem = {
+    item: null,
     currentX: null,
     currentY: null,
     offsetX: null,
     offsetY: null,
 
-    setPositions: function (item) {
-        this.currentX = parseInt(item.dataset.currentX);
-        this.currentY = parseInt(item.dataset.currentY);
+    setItem: function (element) {
+        this.item = element;
+    },
+
+    getPositions: function () {
+        this.currentX = parseInt(this.item.dataset.currentX);
+        this.currentY = parseInt(this.item.dataset.currentY);
+    },
+
+    savePositions: function () {
+        this.item.dataset.currentX = this.currentX;
+        this.item.dataset.currentY = this.currentY;
     }
-};
+}
+
 
 // set gridSize
 const gridSize = 100; // change to control the gap between the grid's lines.
@@ -55,7 +66,6 @@ function createDraggableCircle(circleSize = 25) {
     //the function takes one parameter (number) that defines the circle's radius size. default is 25.
     const dragItem = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     dragItem.classList.add('draggable');
-    dragItem.dataset.active = false;
     dragItem.dataset.currentX = 0;
     dragItem.dataset.currentY = 0;
     dragItem.setAttribute('r', circleSize);
@@ -76,52 +86,36 @@ function roundNum(num, roundTo) {
 
 
 function dragStart(e) {
-    if (!e.target.closest('.draggable') || document.querySelectorAll("[data-active='true']").length > 1) return;
+    if (!e.target.closest('.draggable')) return;
 
-    //marking the active circle
-    e.target.dataset.active = true;
+    //set the active circle and get it's position
+    currentDragItem.setItem(e.target);
+    currentDragItem.getPositions();
 
-    // get item's positions
-    draggedItem.setPositions(document.querySelector("[data-active='true']"));
-
-    draggedItem.offsetX = e.clientX - draggedItem.currentX;
-    draggedItem.offsetY = e.clientY - draggedItem.currentY;
+    currentDragItem.offsetX = e.clientX - currentDragItem.currentX;
+    currentDragItem.offsetY = e.clientY - currentDragItem.currentY;
 }
 
 function drag(e) {
-    if (!document.querySelector("[data-active='true']") || document.querySelectorAll("[data-active='true']").length > 1) return;
+    if (!currentDragItem.item) return;
 
-    // get item's ID and positions
-    const item = document.querySelector("[data-active='true']")
+    currentDragItem.currentX = e.clientX - currentDragItem.offsetX;
+    currentDragItem.currentY = e.clientY - currentDragItem.offsetY;
 
-
-    draggedItem.currentX = e.clientX - draggedItem.offsetX;
-    draggedItem.currentY = e.clientY - draggedItem.offsetY;
-
-    // setTranslate(currentX, currentY, item);
-    setTranslate(draggedItem.currentX, draggedItem.currentY, item);
-
+    setTranslate(currentDragItem.currentX, currentDragItem.currentY, currentDragItem.item);
 }
 
 
 function dragEnd(e) {
-    if (!e.target.closest("[data-active='true']")) return;
+    if (!currentDragItem.item) return;
 
+    currentDragItem.currentX = roundNum(currentDragItem.currentX, gridSize)
+    currentDragItem.currentY = roundNum(currentDragItem.currentY, gridSize)
+    setTranslate(currentDragItem.currentX, currentDragItem.currentY, currentDragItem.item);
 
-    // get item's ID and positions
-    const item = document.querySelector("[data-active='true']")
-
-
-    draggedItem.currentX = roundNum(draggedItem.currentX, gridSize)
-    draggedItem.currentY = roundNum(draggedItem.currentY, gridSize)
-    setTranslate(draggedItem.currentX, draggedItem.currentY, item);
-
-    //unmarking the dragged circle
-    item.dataset.active = false;
-
-    //saving the current positions data on itself
-    item.dataset.currentX = draggedItem.currentX;
-    item.dataset.currentY = draggedItem.currentY;
+    //saving the current positions data on itself and release item
+    currentDragItem.savePositions();
+    currentDragItem.item = null;
 }
 
 // Main
