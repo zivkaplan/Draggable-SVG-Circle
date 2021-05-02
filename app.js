@@ -119,7 +119,7 @@ function dragEnd(e) {
     //unmarking the dragged circle
     item.dataset.active = false;
 
-    //saving the offset data on itself
+    //saving the current positions data on itself
     item.dataset.currentX = draggedItem.currentX;
     item.dataset.currentY = draggedItem.currentY;
 }
