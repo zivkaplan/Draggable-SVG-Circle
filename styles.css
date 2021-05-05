@@ -48,8 +48,10 @@ html {
 
 .btn_color {
   cursor: pointer;
+  border-radius: 5px;
+  font-size: 12px;
 }
 
-.red { background-color:red;  color: white;}
-.green { background-color:green;  color: white;}
-.blue { background-color:blue;color: white;}
+.red { background-color:hsl(0, 100%, 50%);  color: white;}
+.green { background-color:hsl(120, 100%, 25%);  color: white;}
+.blue { background-color:hsl(240, 100%, 50%);color: white;}
