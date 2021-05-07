@@ -4,7 +4,6 @@ html {
     width: 100%;
     margin: 0;
 }
-
 #outerContainer {
     width: 100%;
     height: 100%;
@@ -20,24 +19,26 @@ html {
     height: 100%;
     background-color: #333;
 }
+
 .draggable {
-    fill: #457b9d;
+    fill: hsl(203, 39%, 44%);
     touch-action: none;
     user-select: none;
 }
 
 .draggable:hover {
     cursor: pointer;
-    border-width: 20px;
-    fill: #a8dadc;
+    stroke-width: 3;
+    stroke: white;
+    stroke-opacity: 0.5;
 }
 
 .draggable:active {
-    fill: #f1faee;
+    stroke-width: 5;
 }
 
 .gridLines {
-    stroke: rgb(255, 255, 255);
+    stroke: hsl(0, 0%, 100%);
     stroke-width: 2;
 }
 
@@ -52,15 +53,15 @@ html {
     font-size: 12px;
 }
 
-.red {
+.btn_red {
     background-color: hsl(0, 100%, 50%);
     color: white;
 }
-.green {
+.btn_green {
     background-color: hsl(120, 100%, 25%);
     color: white;
 }
-.blue {
+.btn_blue {
     background-color: hsl(240, 100%, 50%);
     color: white;
 }

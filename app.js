@@ -169,7 +169,7 @@ const setScreen = {
             'http://www.w3.org/2000/svg',
             'circle'
         );
-        dragItem.classList.add('draggable');
+        dragItem.classList.add('draggable', 'default_color');
         dragItem.dataset.currentX = 0;
         dragItem.dataset.currentY = 0;
         dragItem.setAttribute('r', circleSize);
