@@ -14,7 +14,6 @@ const cacheDOM = (function () {
 
 //global variables
 const colorMenuObj = {
-    active: false,
     item: null,
 
     showColorMenu: function (e) {
@@ -28,7 +27,6 @@ const colorMenuObj = {
     hideColorMenu: function (e) {
         if (colorMenuObj.item) {
             cacheDOM.colorMenu.style.display = 'none';
-            colorMenuObj.active = false;
             colorMenuObj.item = null;
         }
     },
