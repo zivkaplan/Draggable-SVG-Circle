@@ -3,13 +3,7 @@ const cacheDOM = (function () {
     const svgContainer = document.querySelector('#svgContainer');
     const colorMenu = document.querySelector('.menu');
 
-    const colorButtons = {
-        red: colorMenu.querySelector('.red'),
-        green: colorMenu.querySelector('.green'),
-        blue: colorMenu.querySelector('.blue'),
-    };
-
-    return { outerContainer, svgContainer, colorMenu, colorButtons };
+    return { outerContainer, svgContainer, colorMenu };
 })();
 
 //global variables
