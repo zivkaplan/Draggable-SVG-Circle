@@ -11,7 +11,7 @@ const colorMenuObj = {
     item: null,
 
     showColorMenu: function (e) {
-        if (e.detail <= 2 || !e.target.closest('.draggable')) return;
+        if (e.detail <= 1 || !e.target.closest('.draggable')) return;
         cacheDOM.colorMenu.style.display = 'block';
         cacheDOM.colorMenu.style.top = e.clientY - 30 + 'px';
         cacheDOM.colorMenu.style.left = e.clientX + 'px';
@@ -53,7 +53,7 @@ const currentDragItem = {
     },
 
     dragStart: function (e) {
-        if (!e.target.closest('.draggable') || e.detail > 2) return;
+        if (!e.target.closest('.draggable') || e.detail > 1) return;
 
         //set the active circle and get it's position
         currentDragItem.setItem(e.target);
