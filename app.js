@@ -1,10 +1,8 @@
-const cacheDOM = (function () {
-    const outerContainer = document.querySelector('#outerContainer');
-    const svgContainer = document.querySelector('#svgContainer');
-    const colorMenu = document.querySelector('.menu');
-
-    return { outerContainer, svgContainer, colorMenu };
-})();
+const cacheDOM = {
+    outerContainer: document.querySelector('#outerContainer'),
+    svgContainer: document.querySelector('#svgContainer'),
+    colorMenu: document.querySelector('.menu'),
+};
 
 //global variables
 const colorMenuObj = {
@@ -38,11 +36,7 @@ const currentDragItem = {
     offsetX: null,
     offsetY: null,
 
-    setItem: function (element) {
-        this.item = element;
-    },
-
-    getPositions: function () {
+    setPositions: function () {
         this.currentX = parseInt(this.item.dataset.currentX);
         this.currentY = parseInt(this.item.dataset.currentY);
     },
@@ -56,8 +50,8 @@ const currentDragItem = {
         if (!e.target.closest('.draggable') || e.detail > 1) return;
 
         //set the active circle and get it's position
-        currentDragItem.setItem(e.target);
-        currentDragItem.getPositions();
+        currentDragItem.item = e.target;
+        currentDragItem.setPositions();
 
         currentDragItem.offsetX = e.clientX - currentDragItem.currentX;
         currentDragItem.offsetY = e.clientY - currentDragItem.currentY;
@@ -71,8 +65,7 @@ const currentDragItem = {
 
         currentDragItem.setTranslate(
             currentDragItem.currentX,
-            currentDragItem.currentY,
-            currentDragItem.item
+            currentDragItem.currentY
         );
     },
 
@@ -89,8 +82,7 @@ const currentDragItem = {
         );
         currentDragItem.setTranslate(
             currentDragItem.currentX,
-            currentDragItem.currentY,
-            currentDragItem.item
+            currentDragItem.currentY
         );
 
         //saving the current positions data on itself and release item
@@ -98,9 +90,9 @@ const currentDragItem = {
         currentDragItem.item = null;
     },
 
-    setTranslate: function (xPos, yPos, el) {
+    setTranslate: function (xPos, yPos) {
         // function that "moves" the draggabe element
-        el.style.transform = `translate(${xPos}px, ${yPos}px)`;
+        this.item.style.transform = `translate(${xPos}px, ${yPos}px)`;
     },
 
     roundNum: function (num, roundTo) {
