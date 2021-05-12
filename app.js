@@ -28,7 +28,7 @@ const colorMenuObj = {
     },
 };
 
-//vriable to save the current dragged item properties
+//local variable for the current dragged item
 const currentDragItem = {
     item: null,
     currentX: null,
@@ -36,7 +36,7 @@ const currentDragItem = {
     offsetX: null,
     offsetY: null,
 
-    setPositions: function () {
+    retrievePositions: function () {
         this.currentX = parseInt(this.item.dataset.currentX);
         this.currentY = parseInt(this.item.dataset.currentY);
     },
@@ -51,7 +51,7 @@ const currentDragItem = {
 
         //set the active circle and get it's position
         currentDragItem.item = e.target;
-        currentDragItem.setPositions();
+        currentDragItem.retrievePositions();
 
         currentDragItem.offsetX = e.clientX - currentDragItem.currentX;
         currentDragItem.offsetY = e.clientY - currentDragItem.currentY;
